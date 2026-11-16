@@ -23,3 +23,4 @@ jobs:
       - uses: ./aa-trusted/tool/action
         with:
           github-token: ${{ github.token }}
+          gate: true   # gate-demo branch ONLY: opt-in blocking (main stays report mode)

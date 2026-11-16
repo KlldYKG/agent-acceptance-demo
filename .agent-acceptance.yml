@@ -1,9 +1,8 @@
 # agent-acceptance policy — loaded ONLY from the base revision.
 # A PR can never alter the checks applied to itself.
 #
-# This is the report-mode demo: blocking is OFF. See the gate-demo branch
-# for the opt-in blocking configuration.
+# gate-demo: OPT-IN BLOCKING. The main branch keeps gate: false (report mode).
 test-dirs: tests
 mutation-budget-seconds: 600
 flaky-n: 3
-gate: false
+gate: true
