@@ -7,9 +7,19 @@ jobs:
   evidence:
     runs-on: ubuntu-latest
     steps:
+      # The code under test: the PR merge snapshot (full history for git archive).
       - uses: actions/checkout@v4
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
           fetch-depth: 0
-      # Replace with the published action ref (org/agent-acceptance@v0) after release.
-      - uses: ./tool/action
+      # The action code itself ALWAYS comes from the trusted base branch (main),
+      # never from the (possibly stale) merge ref. This is the documented safe
+      # pattern for pull_request_target workflows.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: aa-trusted
+      # TODO: replace with the published action ref (org/agent-acceptance@v0).
+      - uses: ./aa-trusted/tool/action
+        with:
+          github-token: ${{ github.token }}
