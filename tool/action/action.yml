@@ -1,0 +1,52 @@
+name: 'agent-acceptance'
+description: >
+  Execution-layer test-evidence gate for AI-contributed PRs: verifies that added or
+  modified tests fail on the base revision and pass on the PR revision, with sampled
+  mutation testing. Report mode (default) never blocks.
+branding:
+  icon: 'check-circle'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'Token used to upsert the PR comment.'
+    required: false
+    default: ${{ github.token }}
+  test-dirs:
+    description: 'Comma-separated directories that contain test code.'
+    required: false
+    default: 'tests'
+  install-deps:
+    description: 'Opt-in: install requirements.txt from PyPI in a separate networked setup container. Residual risk documented in README.'
+    required: false
+    default: 'false'
+  mutation-budget-seconds:
+    description: 'Wall-clock budget for sampled mutation testing.'
+    required: false
+    default: '600'
+  gate:
+    description: 'When true, the action fails if test evidence is BROKEN. Default: report-only.'
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Build sandbox runner image
+      shell: bash
+      run: docker build -t aa-runner:local "${{ github.action_path }}/runner"
+
+    - name: Evaluate test evidence
+      shell: bash
+      env:
+        AA_PR_NUMBER: ${{ github.event.pull_request.number }}
+        AA_REPO: ${{ github.repository }}
+        AA_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        AA_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        AA_TEST_DIRS: ${{ inputs.test-dirs }}
+        AA_INSTALL_DEPS: ${{ inputs.install-deps }}
+        AA_MUTATION_BUDGET_S: ${{ inputs.mutation-budget-seconds }}
+        AA_GATE: ${{ inputs.gate }}
+        AA_TOKEN: ${{ inputs.github-token }}
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: bash "${{ github.action_path }}/scripts/run.sh"
