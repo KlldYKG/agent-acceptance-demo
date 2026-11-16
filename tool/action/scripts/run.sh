@@ -107,6 +107,7 @@ python "$(dirname "$0")/report.py"   "$OUT"
 bash "$(dirname "$0")/post_comment.sh" "$OUT/report.md" "$AA_PR_NUMBER" "$AA_REPO"
 
 VERDICT="$(jq -r .verdict "$OUT/evidence.json")"
+log "config: AA_GATE='${AA_GATE}' VERDICT='${VERDICT}' (gate fires only when AA_GATE=true)"
 if [ "$AA_GATE" = "true" ] && { [ "$VERDICT" = "INVALID_EVIDENCE" ] || [ "$VERDICT" = "ERROR" ]; }; then
   log "gate mode: failing on verdict=$VERDICT"
   exit 1
