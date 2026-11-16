@@ -50,7 +50,7 @@ docker volume create "$DEPS_VOL" >/dev/null
 DEPS_MOUNT=()
 if [ "$AA_INSTALL_DEPS" = "true" ]; then
   log "setup container: installing dependencies (networked, 900s cap, binary wheels only)"
-  timeout 900 docker run --rm --user 1000 \
+  timeout 900 docker run --rm --user "$(id -u):$(id -g)" \
     -v "$T/pr-tree:/src:ro" -v "$DEPS_VOL:/deps" \
     aa-runner:local bash -c \
     "pip install --no-cache-dir --target /deps --only-binary=:all: \
@@ -66,8 +66,8 @@ run_sandbox() { # $1=tree $2=junitxml
   docker run --rm --network none \
     --cpus 2 --memory 2g --pids-limit 256 \
     --read-only --tmpfs /tmp:rw,noexec,nosuid,size=512m \
-    --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 \
-    -e PYTHONDONTWRITEBYTECODE=1 \
+    --cap-drop ALL --security-opt no-new-privileges --user "$(id -u):$(id -g)" \
+    -e PYTHONDONTWRITEBYTECODE=1 -e HOME=/tmp \
     -v "$1:/work:ro" -v "$OUT:/out:rw" "${DEPS_MOUNT[@]}" \
     -w /work aa-runner:local \
     python -m pytest -p no:cacheprovider -q --junitxml="/out/$2" $TEST_PATHS \
@@ -88,8 +88,8 @@ if [ "${#changed_src[@]}" -gt 0 ]; then
   log "sandbox run: mutmut sampling (budget ${AA_MUTATION_BUDGET_S}s)"
   if timeout "$AA_MUTATION_BUDGET_S" docker run --rm --network none \
       --cpus 2 --memory 2g --pids-limit 256 \
-      --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 \
-      -e PYTHONDONTWRITEBYTECODE=1 \
+      --cap-drop ALL --security-opt no-new-privileges --user "$(id -u):$(id -g)" \
+      -e PYTHONDONTWRITEBYTECODE=1 -e HOME=/tmp \
       -v "$T/mut-tree:/work" -v "$OUT:/out:rw" "${DEPS_MOUNT[@]}" \
       -w /work aa-runner:local bash -c \
       "mutmut run 2>&1 | tail -5; mutmut junitxml > /out/mutation.xml" ; then
