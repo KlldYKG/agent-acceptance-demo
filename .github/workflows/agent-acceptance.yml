@@ -7,11 +7,15 @@ jobs:
   evidence:
     runs-on: ubuntu-latest
     steps:
-      # The code under test: the PR merge snapshot (full history for git archive).
+      # The code under test: the PR HEAD revision (always exists) + the base
+      # revision fetched separately. This avoids the racy refs/pull/N/merge
+      # ref, which GitHub may not have computed when the workflow starts.
       - uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
           fetch-depth: 0
+      - name: Fetch base revision
+        run: git fetch --no-tags origin "${{ github.event.pull_request.base.sha }}"
       # The action code itself ALWAYS comes from the trusted base branch (main),
       # never from the (possibly stale) merge ref. This is the documented safe
       # pattern for pull_request_target workflows.
