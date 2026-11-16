@@ -5,6 +5,7 @@ set -euo pipefail
 
 T="$(mktemp -d)"
 OUT="$T/out"; mkdir -p "$OUT"
+chmod 777 "$OUT"   # bind-mount target must be writable regardless of container uid mapping
 RUN_ID="$(head -c 8 /proc/sys/kernel/random/uuid)"
 changed_tests=()  # populated below
 
