@@ -16,14 +16,8 @@ jobs:
           fetch-depth: 0
       - name: Fetch base revision
         run: git fetch --no-tags origin "${{ github.event.pull_request.base.sha }}"
-      # The action code itself ALWAYS comes from the trusted base branch (main),
-      # never from the (possibly stale) merge ref. This is the documented safe
-      # pattern for pull_request_target workflows.
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          path: aa-trusted
-      # TODO: replace with the published action ref (org/agent-acceptance@v0).
-      - uses: ./aa-trusted/tool/action
+      # The action lives in the tool repository and is pinned by commit SHA
+      # (supply-chain baseline; floating tags are disabled on purpose).
+      - uses: KlldYKG/agent-acceptance/action@2911e98c9c8a2f58d9448dcada8de8ecee7cbd4a
         with:
           github-token: ${{ github.token }}
