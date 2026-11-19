@@ -18,6 +18,6 @@ jobs:
         run: git fetch --no-tags origin "${{ github.event.pull_request.base.sha }}"
       # The action lives in the tool repository and is pinned by commit SHA
       # (supply-chain baseline; floating tags are disabled on purpose).
-      - uses: KlldYKG/agent-acceptance/action@2911e98c9c8a2f58d9448dcada8de8ecee7cbd4a
+      - uses: KlldYKG/agent-acceptance/action@a860ce6d180bd3bd78527188e354c9cbc996307e # v1.0.1
         with:
           github-token: ${{ github.token }}

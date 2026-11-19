@@ -35,10 +35,9 @@ jobs:
   evidence:
     runs-on: ubuntu-latest
     steps:
-      # Pilot phase: action served from the demo repo, pinned to an immutable SHA.
-      # After v0 release this line becomes: uses: <org>/agent-acceptance@v0
+      # Action code: served from the tool repo, pinned to the v1.0.1 release SHA.
       - name: Evaluate test evidence
-        uses: KlldYKG/agent-acceptance-demo/tool/action@42ca5a5
+        uses: KlldYKG/agent-acceptance/action@a860ce6d180bd3bd78527188e354c9cbc996307e
         with:
           github-token: ${{ github.token }}
           # test-dirs: tests          # comma-separated, defaults to "tests"
@@ -46,7 +45,7 @@ jobs:
           # gate: false               # report-only. Never set true without a team decision.
 ```
 
-Pilot pin: `42ca5a5` (current `main` of the tool repo). Pinning to a SHA means
+Pilot pin: `a860ce6` (tool repo release `v1.0.1`). Pinning to a SHA means
 the tool's code **cannot change under you** — updates happen only when you edit
 the pin. We will announce every new pin in advance; you are never auto-upgraded.
 
