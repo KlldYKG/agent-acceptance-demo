@@ -9,7 +9,7 @@ import json
 def format_jsonl(records):
     """Serialize records to JSON Lines text."""
     parts = [json.dumps(r) for r in records]
-    return ", ".join(parts)  # BUG: separator should be "\n"
+    return "\n".join(parts)  # BUG: separator should be "\n"
 
 
 def parse_jsonl(text):
